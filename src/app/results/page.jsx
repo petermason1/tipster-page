@@ -1,135 +1,76 @@
-'use client'
-import { useEffect, useState } from 'react'
+'use client';
+import React, { useEffect, useState } from 'react';
+import styles from './Racecards.module.css';
 
-// Bookie-style place logic
-function getPlacesAllowed(numRunners, raceType = '') {
-  const isHandicap = raceType.toLowerCase().includes('handicap')
-  if (isHandicap && numRunners >= 16) return 4
-  if (numRunners >= 8) return 3
-  if (numRunners >= 5) return 2
-  return 1
-}
-
-export default function ResultsPage() {
-  const [races, setRaces] = useState([])
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(true)
-  const [lastUpdated, setLastUpdated] = useState(null)
+export default function RacecardsPage() {
+  const [racecards, setRacecards] = useState([]);
 
   useEffect(() => {
-    const fetchData = () => {
-      fetch('/api/results')
-        .then(res => res.json())
-        .then(data => {
-          const raceList = data?.results?.results || []
-          setRaces(raceList)
-          setLastUpdated(new Date().toLocaleTimeString())
-        })
-        .catch(err => {
-          console.error(err)
-          setError('Failed to load results.')
-        })
-        .finally(() => setLoading(false))
-    }
+    const fetchRacecards = async () => {
+      try {
+        const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+        const response = await fetch(`/data/${today}-racecards.json`);
+        const data = await response.json();
+        if (data && Array.isArray(data.racecards)) {
+          const sorted = [...data.racecards].sort((a, b) => {
+            if (a.course < b.course) return -1;
+            if (a.course > b.course) return 1;
+            return a.off_time.localeCompare(b.off_time);
+          });
+          setRacecards(sorted);
+        }
+      } catch (error) {
+        console.error('Error fetching racecards:', error);
+      }
+    };
 
-    fetchData() // initial fetch
-    const interval = setInterval(fetchData, 60000) // every 1 min
-    return () => clearInterval(interval)
-  }, [])
+    fetchRacecards();
+  }, []);
+
+  // Replace apostrophes with right single quote for safe display
+  const safeText = (text) => {
+    if (!text) return '';
+    return text.replace(/'/g, '\u2019');
+  };
 
   return (
-    <div style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
-      <h1>📊 Today’s Results</h1>
-      {lastUpdated && (
-        <p style={{ fontSize: '0.85rem', color: '#666' }}>
-          Last updated: {lastUpdated}
-        </p>
-      )}
-      <p style={{ fontSize: '0.85rem', color: '#888', marginTop: '0.25rem' }}>
-        Standard bookmaker place terms applied. Some bookies may have paid extra places.
-      </p>
-
-      {loading && <p>Loading…</p>}
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      {!loading && !races.length && <p>No results available yet.</p>}
-
-      {races.map((race, i) => {
-        const places = getPlacesAllowed(race.runners.length, race.race_name)
-
-        return (
-          <div
-            key={i}
-            style={{
-              marginBottom: '2.5rem',
-              paddingBottom: '1rem',
-              borderBottom: '1px solid #ddd'
-            }}
-          >
-            <h3 style={{ marginBottom: '0.25rem' }}>
-              {race.course} – {race.race_name}
-            </h3>
-            <p style={{ margin: '0.3rem 0', fontSize: '0.9rem', color: '#444' }}>
-              <strong>{race.time}</strong> | {race.class} | {race.dist} | Going: {race.going}
-            </p>
-
-            {race.runners.map((runner, idx) => {
-              const pos = parseInt(runner.position)
-              const isWinner = pos === 1
-              const isPlaced = pos && pos <= places
-
-              return (
-                <div
-                  key={idx}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'flex-start',
-                    gap: '1rem',
-                    marginBottom: '0.75rem',
-                    backgroundColor: isWinner
-                      ? '#d1ffc8'
-                      : isPlaced
-                      ? '#fff8c4'
-                      : 'transparent',
-                    borderRadius: '6px',
-                    padding: '0.5rem',
-                    border: '1px solid #eee'
-                  }}
-                >
-                  {runner.silk_url && (
-                    <img
-                      src={runner.silk_url}
-                      alt={`${runner.horse} silks`}
-                      style={{
-                        width: '40px',
-                        height: '40px',
-                        objectFit: 'contain',
-                        border: '1px solid #ccc',
-                        borderRadius: '4px',
-                        background: '#fff'
-                      }}
-                    />
-                  )}
-
-                  <div>
-                    <strong>{runner.position || '❓'}.</strong>{' '}
-                    {runner.horse} – SP: {runner.sp || 'N/A'}
-                    {runner.comment && (
-                      <p style={{
-                        margin: '0.25rem 0 0',
-                        fontStyle: 'italic',
-                        fontSize: '0.85rem',
-                        color: '#555'
-                      }}>
-                        {runner.comment}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              )
-            })}
+    <main className={styles.racecardsPage}>
+      <h1>Today’s Racecards</h1>
+      {racecards.map((race) => (
+        <div key={race.race_id} className={styles.raceCard}>
+          <div className={styles.raceHeader}>
+            <strong>{race.off_time} – {race.course}</strong>
+            <span>{safeText(race.race_name)}</span>
+            <small>{race.race_class} | {race.type} | {race.distance_round}</small>
           </div>
-        )
-      })}
-    </div>
-  )
+          <table className={styles.runnerTable}>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Draw</th>
+                <th>Horse</th>
+                <th>Jockey</th>
+                <th>Trainer</th>
+                <th>OFR</th>
+                <th>Form</th>
+              </tr>
+            </thead>
+            <tbody>
+              {race.runners.map((runner) => (
+                <tr key={runner.horse_id}>
+                  <td>{runner.number}</td>
+                  <td>{runner.draw}</td>
+                  <td>{runner.horse}</td>
+                  <td>{runner.jockey}</td>
+                  <td>{runner.trainer}</td>
+                  <td>{runner.ofr}</td>
+                  <td>{runner.form}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ))}
+    </main>
+  );
 }
