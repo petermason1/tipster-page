@@ -1,95 +1,37 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+import Link from 'next/link';
+import styles from './Home.module.css';
 
-export default function Home() {
+export default function HomePage() {
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>src/app/page.js</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
+    <main className={styles.container}>
+      <section className={styles.hero}>
+        <h1 className={styles.headline}>Daily Racing Insights</h1>
+        <p className={styles.subheadline}>
+          Value picks. Data-driven bets. No fluff — just smart racing analysis.
+        </p>
         <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
+          <Link href="/racecards" className={styles.button}>Today’s Racecards</Link>
+          <Link href="/results" className={styles.buttonAlt}>Yesterday’s Results</Link>
         </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      </section>
+
+      <section className={styles.deals}>
+        <h2>Top Racing Deals</h2>
+        <ul className={styles.dealList}>
+          <li><a href="#" target="_blank" rel="noopener noreferrer">🏇 Bet £10 Get £30 – RacingSignUp.co.uk</a></li>
+          <li><a href="#" target="_blank" rel="noopener noreferrer">🍻 Cheltenham Gold Cup Weekend – £99pp</a></li>
+          <li><a href="#" target="_blank" rel="noopener noreferrer">🏖️ Racing & Sun: Dubai Winter Tour Packages</a></li>
+        </ul>
+      </section>
+
+      <section className={styles.blog}>
+        <h2>Latest Insights</h2>
+        <ul className={styles.blogList}>
+          <li><Link href="#">🔍 Friday’s Handicaps: Where’s the Value?</Link></li>
+          <li><Link href="#">📊 3 Trainers on Fire This Week</Link></li>
+          <li><Link href="#">💰 Each-Way Angles at Brighton</Link></li>
+        </ul>
+      </section>
+    </main>
   );
 }
