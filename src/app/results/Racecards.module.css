@@ -1,0 +1,109 @@
+.racecardsPage {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  color: #f1f1f1;
+  background-color: #111;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.racecardsPage h1 {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  text-align: center;
+  color: #00ffc3;
+}
+
+.raceCard {
+  margin-bottom: 3rem;
+  padding: 1.5rem;
+  background: #1c1c1c;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.17);
+  transition: transform 0.2s ease;
+}
+
+.raceCard:hover {
+  transform: scale(1.01);
+}
+
+.raceHeader {
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #333;
+  padding-bottom: 0.5rem;
+}
+
+.raceHeader strong {
+  font-size: 1.2rem;
+  color: #fff;
+}
+
+.raceHeader span {
+  display: block;
+  font-size: 1rem;
+  margin-top: 0.2rem;
+  color: #ccc;
+}
+
+.raceHeader small {
+  display: block;
+  font-size: 0.9rem;
+  margin-top: 0.2rem;
+  color: #888;
+}
+
+.runnerTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
+}
+
+.runnerTable th,
+.runnerTable td {
+  padding: 0.6rem 0.8rem;
+  text-align: left;
+  border-bottom: 1px solid #2d2d2d;
+}
+
+.runnerTable th {
+  background-color: #222;
+  color: #00ffc3;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.runnerTable td {
+  font-size: 0.9rem;
+  color: #eee;
+}
+
+.runnerTable tr:hover {
+  background-color: #222;
+}
+
+@media (max-width: 768px) {
+  .racecardsPage {
+    padding: 1rem;
+  }
+
+  .raceCard {
+    padding: 1rem;
+  }
+
+  .runnerTable th,
+  .runnerTable td {
+    font-size: 0.8rem;
+    padding: 0.5rem;
+  }
+
+  .raceHeader strong {
+    font-size: 1rem;
+  }
+
+  .raceHeader span,
+  .raceHeader small {
+    font-size: 0.8rem;
+  }
+}
