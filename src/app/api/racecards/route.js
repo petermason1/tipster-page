@@ -2,10 +2,9 @@ import { NextResponse } from 'next/server';
 import { readFileSync, readdirSync, existsSync } from 'fs';
 import path from 'path';
 
-// Helper to find latest racecards file
 function getLatestRacecardsFile(dataDir) {
   const files = readdirSync(dataDir)
-    .filter(name => name.match(/^\d{4}-\d{2}-\d{2}-racecards\.json$/)) // e.g. 2025-05-30-racecards.json
+    .filter(name => name.match(/^\d{4}-\d{2}-\d{2}-racecards\.json$/))
     .sort()
     .reverse();
   return files[0] ? path.join(dataDir, files[0]) : null;
@@ -13,9 +12,11 @@ function getLatestRacecardsFile(dataDir) {
 
 export async function GET(req) {
   try {
-    const dataDir = '/Users/petermason/horse-tips/data';
+    // Adjust this path to wherever your data folder is relative to the project root
+    // Make sure this folder and files are deployed if you want this working on Vercel (which is rare)
+    const dataDir = path.resolve('./data');
 
-    // 1. Get ?date param if present (e.g. ?date=2025-05-29)
+    // Get ?date param if present
     const url = new URL(req.url);
     const queryDate = url.searchParams.get('date');
 
@@ -29,13 +30,10 @@ export async function GET(req) {
         return NextResponse.json({ error: `File not found for date: ${queryDate}` }, { status: 404 });
       }
     } else {
-      // 2. Try today’s file
       const today = new Date().toISOString().split('T')[0];
       fileName = `${today}-racecards.json`;
       filePath = path.join(dataDir, fileName);
-
       if (!existsSync(filePath)) {
-        // 3. Fallback to latest available file
         const latest = getLatestRacecardsFile(dataDir);
         if (!latest) {
           return NextResponse.json({ error: 'No racecards JSON files found.' }, { status: 404 });

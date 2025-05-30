@@ -16,6 +16,7 @@ export default function Nav() {
       </div>
       <div style={{ display: "flex", gap: "1rem" }}>
         <Link href="/about" style={{ color: "#fff", textDecoration: "none" }}>About</Link>
+        <Link href="/racecards" style={{ color: "#fff", textDecoration: "none" }}>Racecards</Link>
         <Link href="/results" style={{ color: "#fff", textDecoration: "none" }}>Results</Link>
         <Link href="/contact" style={{ color: "#fff", textDecoration: "none" }}>Contact</Link>
       </div>

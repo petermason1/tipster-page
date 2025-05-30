@@ -7,8 +7,11 @@ export default function RacecardsPage() {
   useEffect(() => {
     const fetchRacecards = async () => {
       try {
-        const today = new Date().toISOString().split('T')[0];
+        const today = new Date().toISOString().split('T')[0]; // format YYYY-MM-DD
         const response = await fetch(`/data/${today}-racecards.json`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
         const data = await response.json();
         if (data && Array.isArray(data.racecards)) {
           const sorted = [...data.racecards].sort((a, b) => {
@@ -17,6 +20,8 @@ export default function RacecardsPage() {
             return a.off_time.localeCompare(b.off_time);
           });
           setRacecards(sorted);
+        } else {
+          console.warn('Racecards JSON missing or malformed.');
         }
       } catch (error) {
         console.error('Error fetching racecards:', error);
@@ -34,6 +39,7 @@ export default function RacecardsPage() {
     <>
       <main className="racecardsPage">
         <h1>Today’s Racecards</h1>
+        {racecards.length === 0 && <p>No racecards found for today.</p>}
         {racecards.map((race) => (
           <div key={race.race_id} className="raceCard">
             <div className="raceHeader">
@@ -74,50 +80,65 @@ export default function RacecardsPage() {
       <style jsx>{`
         .racecardsPage {
           padding: 2rem;
-          font-family: system-ui, sans-serif;
-          background: #f9f9f9;
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+            Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+          background-color: #f9f9f9;
           color: #222;
         }
         h1 {
-          margin-bottom: 1rem;
+          font-size: 2rem;
           font-weight: 700;
+          margin-bottom: 1.5rem;
         }
         .raceCard {
-          margin-bottom: 2rem;
-          padding-bottom: 1rem;
-          border-bottom: 1px solid #ccc;
+          margin-bottom: 2.5rem;
+          padding-bottom: 1.5rem;
+          border-bottom: 1px solid #ddd;
+          background: #fff;
+          border-radius: 8px;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.05);
         }
         .raceHeader {
           margin-bottom: 1rem;
+          padding: 0 1rem;
         }
         .raceHeader strong {
           display: block;
           font-size: 1.1rem;
-          margin-bottom: 0.25rem;
+          margin-bottom: 0.3rem;
+          color: #0070f3;
         }
         .raceHeader span {
           font-weight: 600;
-          font-size: 1rem;
+          font-size: 1.05rem;
           display: block;
-          margin-bottom: 0.25rem;
+          margin-bottom: 0.3rem;
+          color: #111;
         }
         .raceHeader small {
           color: #666;
           font-size: 0.85rem;
+          font-style: italic;
         }
         .runnerTable {
           width: 100%;
           border-collapse: collapse;
+          margin: 0 1rem 1rem 1rem;
         }
         .runnerTable th,
         .runnerTable td {
-          border: 1px solid #ddd;
-          padding: 0.4rem 0.7rem;
+          border: 1px solid #eee;
+          padding: 0.5rem 0.8rem;
           text-align: left;
           font-size: 0.9rem;
         }
         .runnerTable th {
-          background: #eee;
+          background-color: #f0f0f0;
+          font-weight: 600;
+          color: #333;
+        }
+        .runnerTable tbody tr:hover {
+          background-color: #fafafa;
         }
       `}</style>
     </>

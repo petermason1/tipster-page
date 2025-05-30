@@ -1,72 +1,112 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 
-export default function RacecardsPage() {
-  const [racecards, setRacecards] = useState([]);
+// Bookie-style place calculation
+function getPlacesAllowed(numRunners, raceType = '') {
+  const isHandicap = raceType.toLowerCase().includes('handicap');
+  if (numRunners >= 16 && isHandicap) return 4;
+  if (numRunners >= 8) return 3;
+  if (numRunners >= 5) return 2;
+  return 1;
+}
+
+export default function ResultsPage() {
+  const [results, setResults] = useState([]);
+  const [lastUpdated, setLastUpdated] = useState(null);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    const fetchRacecards = async () => {
+    const fetchResults = async () => {
       try {
-        const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-        const response = await fetch(`/data/${today}-racecards.json`);
-        const data = await response.json();
-        if (data && Array.isArray(data.racecards)) {
-          const sorted = [...data.racecards].sort((a, b) => {
-            if (a.course < b.course) return -1;
-            if (a.course > b.course) return 1;
-            return a.off_time.localeCompare(b.off_time);
-          });
-          setRacecards(sorted);
+        const today = new Date().toISOString().split('T')[0];
+        const response = await fetch(`/data/${today}-results.json`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
-      } catch (error) {
-        console.error('Error fetching racecards:', error);
+        const data = await response.json();
+        if (data && Array.isArray(data.results)) {
+          setResults(data.results);
+          setLastUpdated(new Date().toLocaleTimeString());
+          setError('');
+        } else {
+          setError('Results data is malformed.');
+        }
+      } catch (err) {
+        setError(`Error fetching results: ${err.message}`);
       }
     };
 
-    fetchRacecards();
+    fetchResults();
+
+    const interval = setInterval(fetchResults, 60000); // refresh every minute
+    return () => clearInterval(interval);
   }, []);
 
-  // Replace apostrophes with right single quote for safe display
-  const safeText = (text) => {
-    if (!text) return '';
-    return text.replace(/'/g, '\u2019');
+  // Highlight winner (pos=1) and placed (pos <= allowed places)
+  const highlightRow = (pos, numRunners, raceType) => {
+    const places = getPlacesAllowed(numRunners, raceType);
+    if (pos === 1) return { backgroundColor: '#d1ffc8' }; // winner - light green
+    if (pos && pos <= places) return { backgroundColor: '#fff4c2' }; // placed - pale yellow
+    return {};
   };
 
   return (
     <>
-      <main className="racecardsPage">
-        <h1>Today’s Racecards</h1>
-        {racecards.map((race) => (
-          <div key={race.race_id} className="raceCard">
-            <div className="raceHeader">
-              <strong>{race.off_time} – {race.course}</strong>
-              <span>{safeText(race.race_name)}</span>
-              <small>{race.race_class} | {race.type} | {race.distance_round}</small>
-            </div>
+      <main className="resultsPage">
+        <h1>Today’s Results</h1>
+        {lastUpdated && (
+          <p className="lastUpdated">Last updated: {lastUpdated}</p>
+        )}
+        {error && <p className="error">{error}</p>}
+        {!error && results.length === 0 && <p>No results available.</p>}
+
+        {results.map((race) => (
+          <div key={race.race_id} className="raceResult">
+            <h3>
+              {race.course} – {race.race_name}
+            </h3>
+            <p className="raceMeta">
+              <strong>{race.time}</strong> | {race.class} | {race.dist} | Going: {race.going}
+            </p>
             <table className="runnerTable">
               <thead>
                 <tr>
-                  <th>#</th>
-                  <th>Draw</th>
+                  <th>Pos</th>
+                  <th>Silks</th>
                   <th>Horse</th>
+                  <th>SP</th>
                   <th>Jockey</th>
                   <th>Trainer</th>
-                  <th>OFR</th>
-                  <th>Form</th>
+                  <th>Comment</th>
                 </tr>
               </thead>
               <tbody>
-                {race.runners.map((runner) => (
-                  <tr key={runner.horse_id}>
-                    <td>{runner.number}</td>
-                    <td>{runner.draw}</td>
-                    <td>{runner.horse}</td>
-                    <td>{runner.jockey}</td>
-                    <td>{runner.trainer}</td>
-                    <td>{runner.ofr}</td>
-                    <td>{runner.form}</td>
-                  </tr>
-                ))}
+                {race.runners.map((runner) => {
+                  const pos = Number(runner.position);
+                  const style = highlightRow(pos, race.runners.length, race.race_name);
+
+                  return (
+                    <tr key={runner.horse_id} style={style}>
+                      <td>{runner.position || '—'}</td>
+                      <td>
+                        {runner.silk_url ? (
+                          <img
+                            src={runner.silk_url}
+                            alt={`${runner.horse} silks`}
+                            className="silksImg"
+                          />
+                        ) : (
+                          '—'
+                        )}
+                      </td>
+                      <td>{runner.horse}</td>
+                      <td>{runner.sp || 'N/A'}</td>
+                      <td>{runner.jockey}</td>
+                      <td>{runner.trainer}</td>
+                      <td>{runner.comment || ''}</td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -74,7 +114,7 @@ export default function RacecardsPage() {
       </main>
 
       <style jsx>{`
-        .racecardsPage {
+        .resultsPage {
           padding: 2rem;
           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
             Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
@@ -84,49 +124,44 @@ export default function RacecardsPage() {
         h1 {
           font-size: 2rem;
           font-weight: 700;
+          margin-bottom: 1rem;
+        }
+        .lastUpdated {
+          font-size: 0.9rem;
+          color: #555;
           margin-bottom: 1.5rem;
         }
-        .raceCard {
-          margin-bottom: 2.5rem;
-          padding-bottom: 1.5rem;
-          border-bottom: 1px solid #ddd;
+        .error {
+          color: red;
+          font-weight: 600;
+          margin-bottom: 1rem;
+        }
+        .raceResult {
+          margin-bottom: 3rem;
+          padding: 1rem;
           background: #fff;
           border-radius: 8px;
-          box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+          box-shadow: 0 3px 8px rgba(0,0,0,0.07);
         }
-        .raceHeader {
-          margin-bottom: 1rem;
-          padding: 0 1rem;
-        }
-        .raceHeader strong {
-          display: block;
-          font-size: 1.1rem;
-          margin-bottom: 0.3rem;
+        .raceResult h3 {
+          margin-bottom: 0.5rem;
           color: #0070f3;
         }
-        .raceHeader span {
-          font-weight: 600;
-          font-size: 1.05rem;
-          display: block;
-          margin-bottom: 0.3rem;
-          color: #111;
-        }
-        .raceHeader small {
-          color: #666;
-          font-size: 0.85rem;
+        .raceMeta {
+          margin-bottom: 1rem;
           font-style: italic;
+          color: #555;
         }
         .runnerTable {
           width: 100%;
           border-collapse: collapse;
-          margin: 0 1rem 1rem 1rem;
+          font-size: 0.9rem;
         }
         .runnerTable th,
         .runnerTable td {
           border: 1px solid #eee;
-          padding: 0.5rem 0.8rem;
+          padding: 0.5rem 0.75rem;
           text-align: left;
-          font-size: 0.9rem;
         }
         .runnerTable th {
           background-color: #f0f0f0;
@@ -135,6 +170,14 @@ export default function RacecardsPage() {
         }
         .runnerTable tbody tr:hover {
           background-color: #fafafa;
+        }
+        .silksImg {
+          width: 40px;
+          height: 40px;
+          object-fit: contain;
+          border: 1px solid #ccc;
+          border-radius: 4px;
+          background: #fff;
         }
       `}</style>
     </>
