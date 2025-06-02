@@ -1,3 +1,9 @@
+/* ── app/globals.css ── */
+
+/* ==============================
+   1) Global color variables & resets
+   ============================== */
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -40,3 +46,10 @@ a {
     color-scheme: dark;
   }
 }
+
+/* ==============================
+   2) (Optionally) Any other global utilities
+   ============================== */
+
+/* …you can add more global utilities or resets here… */
+

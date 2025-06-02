@@ -1,0 +1,89 @@
+/* src/app/predictions/Predictions.module.css */
+
+.container {
+  padding: 1rem;
+  font-family: Arial, sans-serif;
+  color: var(--foreground);
+  background: var(--background);
+}
+
+.heading {
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+/* Wrapper around each “course” accordion section */
+.courseSection {
+  margin-bottom: 1.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  overflow: hidden;
+  background-color: var(--background);
+}
+
+/* The clickable header (just “off time”) for each course */
+.courseHeader {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-weight: 600;
+  font-size: 1.1rem;
+  background: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+}
+
+/* Arrow icon before the off time text */
+.courseHeader .arrow {
+  display: inline-block;
+  margin-right: 0.5rem;
+  transition: transform 0.2s ease;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+/* When open, rotate the arrow */
+.courseSection[open] > .courseHeader .arrow {
+  transform: rotate(90deg);
+}
+
+/* Chevron closed state */
+.courseHeader .arrow::before {
+  content: "▶";
+}
+
+/* Chev open state */
+.courseSection[open] > .courseHeader .arrow::before {
+  content: "▶"; /* we only rotate it, so it still shows ▶ but rotated */
+}
+
+/* The expanded body of each course (race details) */
+.courseBody {
+  padding: 0.75rem 1rem;
+  background-color: #f9f9f9;
+  font-size: 0.95rem;
+}
+
+/* The grid header for runners is not needed here – we only display race-level details */
+.detailRow {
+  margin-bottom: 0.5rem;
+}
+
+.detailLabel {
+  font-weight: 600;
+  margin-right: 0.5rem;
+}
+
+/* “View Racecard” link styling inside expanded body */
+.viewRacecardLink {
+  display: inline-block;
+  margin-top: 0.75rem;
+  color: #0070f3;
+  text-decoration: underline;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
