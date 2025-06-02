@@ -1,0 +1,550 @@
+/* ─────────────────────────────────────────────────────────── *
+ *  CoursePredictions.module.css                              *
+ *  (“Next 6 Races” desktop-first: one row of 6 tiles)         *
+ * ─────────────────────────────────────────────────────────── */
+
+/* ── A) NEXT 6 RACES SECTION (DESKTOP-FIRST) ─────────────────────────── */
+
+/* 1) DESKTOP DEFAULT: 1 row, 6 columns, boxed tiles */
+.nextSixContainer {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: var(--spacing-xs);
+  padding: var(--spacing-md);
+  background-color: var(--brand-light-blue);
+  border: 1px solid var(--brand-mid-blue);
+  border-radius: var(--border-radius-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.nextSixHeading {
+  grid-column: 1 / -1;
+  margin: 0 0 var(--spacing-xs) 0;
+  font-size: var(--font-lg);
+  color: var(--brand-blue);
+  font-weight: 600;
+  text-align: left;
+}
+
+.nextSixEmpty {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: var(--neutral-900);
+  font-style: italic;
+  text-align: center;
+  padding: var(--spacing-sm) 0;
+}
+
+/* Tile styling applies at all sizes, but default layout is 6 across */
+.nextSixItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xxs);
+  padding: var(--spacing-xxs) var(--spacing-xs);
+  background-color: var(--brand-light-blue);
+  border: 1px solid var(--brand-mid-blue);
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  transition: background-color 0.15s ease, box-shadow 0.1s ease;
+  text-align: center;
+}
+
+.nextSixItem:hover {
+  background-color: var(--brand-hover-blue);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.nextSixItem:focus-visible {
+  outline: 2px solid var(--brand-blue);
+  outline-offset: 2px;
+}
+
+/* Off-time label (desktop/mobile: top of tile) */
+.nextSixTime {
+  background-color: var(--neutral-200);
+  border: 1px solid var(--neutral-500);
+  border-radius: var(--border-radius-sm);
+  padding: var(--spacing-xxs) var(--spacing-xs);
+  font-size: var(--font-md);
+  font-weight: 600;
+  color: var(--brand-blue);
+  width: 100%;
+  white-space: nowrap;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.nextSixTime:hover {
+  background-color: var(--neutral-300);
+}
+
+.nextSixTimeActive {
+  background-color: var(--success-green);
+  border-color: var(--success-green-dark);
+  color: #ffffff;
+  box-shadow: 0 0 0 2px rgba(82, 196, 26, 0.5);
+}
+
+/* Course name (below time) */
+.nextSixCourse {
+  font-size: var(--font-sm);
+  font-weight: 500;
+  color: var(--neutral-1000);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
+/* Race name (below course) */
+.nextSixName {
+  font-size: var(--font-sm);
+  color: var(--neutral-900);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
+/* ── B) TABLET (≤1024px): 2 rows, 3 columns ─────────────────────────── */
+@media (max-width: 1024px) {
+  .nextSixContainer {
+    grid-template-columns: repeat(3, 1fr);
+    grid-auto-rows: auto;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+  }
+
+  .nextSixHeading {
+    grid-column: 1 / -1;
+    padding: var(--spacing-sm) var(--spacing-md);
+    margin-bottom: var(--spacing-xs);
+    background-color: var(--brand-light-blue-dark, #d0ebff);
+    border-bottom: 1px solid var(--brand-mid-blue);
+    text-align: center;
+  }
+
+  .nextSixItem {
+    padding: var(--spacing-xs) var(--spacing-md);
+  }
+
+  .nextSixTime {
+    font-size: var(--font-md);
+  }
+
+  .nextSixCourse,
+  .nextSixName {
+    font-size: var(--font-sm);
+    margin-top: var(--spacing-xxs);
+  }
+}
+
+/* ── C) MOBILE (≤768px): 2 rows, 3 columns (same as tablet),
+       but hide race names to save space ─────────────────────────── */
+@media (max-width: 768px) {
+  .nextSixContainer {
+    grid-template-columns: repeat(3, 1fr);
+    grid-auto-rows: auto;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xxs);
+    margin-bottom: var(--spacing-md);
+  }
+
+  .nextSixHeading {
+    grid-column: 1 / -1;
+    padding: var(--spacing-xxs) var(--spacing-md);
+    margin-bottom: var(--spacing-xxs);
+    font-size: var(--font-lg);
+    background-color: var(--brand-light-blue-dark, #d0ebff);
+    border-bottom: 1px solid var(--brand-mid-blue);
+    text-align: center;
+  }
+
+  .nextSixItem {
+    padding: var(--spacing-xxs) var(--spacing-xs);
+  }
+
+  .nextSixTime {
+    font-size: var(--font-sm);
+  }
+
+  .nextSixCourse {
+    font-size: var(--font-sm);
+    margin-top: var(--spacing-xxs);
+  }
+
+  .nextSixName {
+    display: none; /* hide race name on mobile */
+  }
+}
+
+/* ─────────────────────────────────────────────────────────── *
+ *  D) COURSE ROW CONTAINER & COURSE ROWS                            *
+ *  (Rest of your original rules remain unchanged)                  *
+ * ─────────────────────────────────────────────────────────── */
+
+.courseRowContainer {
+  margin-bottom: var(--spacing-lg);
+}
+
+.courseRowBox {
+  background-color: var(--neutral-100);
+  border: 1px solid var(--neutral-400);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.2s ease;
+}
+
+.courseRowBox:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.courseRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.hiddenCourseRow {
+  display: none;
+}
+
+.courseNameCell {
+  flex: 0 0 220px;
+  font-weight: 600;
+  font-size: var(--font-md);
+  color: var(--neutral-1000);
+  padding-right: var(--spacing-md);
+  white-space: nowrap;
+}
+
+.courseNameButton {
+  background: none;
+  border: none;
+  color: var(--neutral-1000);
+  font-weight: 600;
+  font-size: var(--font-md);
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+}
+
+.courseCount {
+  font-weight: 400;
+  color: var(--neutral-700);
+  margin-left: var(--spacing-xxs);
+  font-size: var(--font-sm);
+}
+
+.timesCell {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+  flex: 1 1 auto;
+}
+
+.noRacesText {
+  font-style: italic;
+  color: var(--neutral-800);
+}
+
+/* ─────────────────────────────────────────────────────────── *
+ *  E) TIME BUTTONS (OFF-TIME)                                           *
+ * ─────────────────────────────────────────────────────────── */
+
+.timeButton {
+  background-color: var(--neutral-200);
+  border: 1px solid var(--neutral-500);
+  border-radius: var(--border-radius-sm);
+  padding: var(--spacing-xxs) var(--spacing-sm);
+  font-size: var(--font-sm);
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.1s ease;
+  color: var(--neutral-1000);
+}
+
+.timeButton:hover:not(:disabled) {
+  background-color: var(--neutral-300);
+}
+
+.timeButton:focus-visible {
+  outline: 2px solid var(--brand-blue);
+  outline-offset: 2px;
+}
+
+.timeButtonActive {
+  background-color: var(--success-green);
+  border-color: var(--success-green-dark);
+  color: #ffffff;
+  box-shadow: 0 0 0 2px rgba(82, 196, 26, 0.5);
+}
+
+.timeButtonHeld {
+  background-color: var(--neutral-100);
+  border-color: var(--neutral-400);
+  color: var(--neutral-600);
+  cursor: not-allowed;
+}
+
+.timeButtonHeld:disabled {
+  cursor: not-allowed;
+}
+
+/* ─────────────────────────────────────────────────────────── *
+ *  F) RACE DETAIL PANEL                                                    *
+ * ─────────────────────────────────────────────────────────── */
+
+.raceDetailPanel {
+  margin-top: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  border: 1px solid var(--neutral-400);
+  border-radius: var(--border-radius-sm);
+  background-color: #ffffff;
+  font-size: var(--font-sm);
+  line-height: 1.4;
+}
+
+.basicInfoRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-xs);
+  align-items: baseline;
+}
+
+.detailLabel {
+  font-weight: 500;
+  margin-right: var(--spacing-xxs);
+  color: var(--neutral-900);
+  font-size: 0.92rem;
+}
+
+.detailValue {
+  margin-right: var(--spacing-sm);
+  color: var(--neutral-1000);
+  font-size: 0.92rem;
+}
+
+.distanceGoingContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}
+
+.raceNameRow {
+  margin-bottom: var(--spacing-sm);
+  font-weight: 600;
+  color: var(--neutral-1000);
+  padding-left: var(--spacing-sm);
+}
+
+.extraFieldRow {
+  display: flex;
+  margin-bottom: var(--spacing-xs);
+  font-size: 0.9rem;
+  padding-left: var(--spacing-sm);
+}
+
+/* ─────────────────────────────────────────────────────────── *
+ *  G) RUNNERS TABLE (OPTIONAL)                                              *
+ * ─────────────────────────────────────────────────────────── */
+
+.tableContainer {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: var(--spacing-xs);
+}
+
+.runnersSection {
+  margin-top: var(--spacing-sm);
+  padding-left: var(--spacing-sm);
+}
+
+.runnerHeaderRow {
+  display: grid;
+  grid-template-columns:
+    40px           /* Silk icon */
+    60px           /* Number */
+    minmax(100px, 1fr)  /* Horse */
+    minmax(100px, 1fr)  /* Jockey */
+    60px;          /* Score */
+  column-gap: var(--spacing-xxs);
+  align-items: center;
+  padding-bottom: var(--spacing-xxs);
+  border-bottom: 1px solid var(--neutral-400);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--neutral-1000);
+}
+
+.runnerRow {
+  display: grid;
+  grid-template-columns:
+    40px
+    60px
+    minmax(100px, 1fr)
+    minmax(100px, 1fr)
+    60px;
+  column-gap: var(--spacing-xxs);
+  align-items: center;
+  padding: var(--spacing-xxs) 0;
+  border-bottom: 1px solid #eee;
+  font-size: 0.88rem;
+  color: var(--neutral-800);
+}
+
+.silkCell {
+  position: relative;
+  width: 40px;
+  height: 40px;
+}
+
+.numberCell {
+  text-align: center;
+}
+
+.horseCell {
+  overflow-wrap: break-word;
+}
+
+.jockeyCell {
+  overflow-wrap: break-word;
+}
+
+.scoreCell {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ─────────────────────────────────────────────────────────── *
+ *  H) “VIEW RACECARD” LINK STYLE                                            *
+ * ─────────────────────────────────────────────────────────── */
+
+.viewRacecardLink {
+  font-size: var(--font-sm);
+  color: #1890ff;
+  text-decoration: underline;
+  font-weight: 500;
+  padding-left: var(--spacing-sm);
+}
+
+/* ─────────────────────────────────────────────────────────── *
+ *  I) BACK BUTTON & COURSE-LINK LIST                                          *
+ * ─────────────────────────────────────────────────────────── */
+
+.backButtonContainer {
+  margin-bottom: var(--spacing-md);
+}
+
+.backButton {
+  background-color: transparent;
+  border: none;
+  color: #1890ff;
+  font-size: var(--font-sm);
+  cursor: pointer;
+  padding: var(--spacing-xxs) var(--spacing-xs);
+}
+
+.backButton:hover {
+  text-decoration: underline;
+}
+
+.backButton:focus-visible {
+  outline: 2px solid var(--brand-blue);
+  outline-offset: 2px;
+}
+
+.courseLinkList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-md);
+}
+
+.courseLink {
+  background-color: var(--neutral-100);
+  border: 1px solid var(--neutral-300);
+  border-radius: var(--border-radius-sm);
+  padding: var(--spacing-xxs) var(--spacing-xs);
+  font-size: var(--font-sm);
+  cursor: pointer;
+  color: var(--neutral-1000);
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.courseLink:hover {
+  background-color: var(--neutral-200);
+}
+
+.courseLink:focus-visible {
+  outline: 2px solid var(--brand-blue);
+  outline-offset: 2px;
+}
+
+.courseLinkActive {
+  background-color: #1890ff;
+  border-color: #096dd9;
+  color: #ffffff;
+}
+
+/* ─────────────────────────────────────────────────────────── *
+ *  J) RESULTS SECTION                                                           *
+ * ─────────────────────────────────────────────────────────── */
+
+/* Container around the entire “Results” block */
+.resultsSection {
+  margin-top: var(--spacing-lg);
+}
+
+/* Heading for “Results” */
+.resultsHeading {
+  font-size: var(--font-lg);
+  color: var(--brand-blue);
+  font-weight: 600;
+  margin-bottom: var(--spacing-sm);
+}
+
+/* We use a two-column grid:
+   - first column is fixed at 220px (so course names and “first off times” line up)
+   - second column is fluid (1fr) and will wrap the off-time buttons
+*/
+.resultsGrid {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  row-gap: var(--spacing-xs);
+  column-gap: var(--spacing-md);
+  align-items: center;
+  margin-bottom: var(--spacing-sm);
+}
+
+/* Course name cell (first column) */
+.resultCourseNameCell {
+  font-weight: 600;
+  font-size: var(--font-md);
+  color: var(--neutral-1000);
+  white-space: nowrap;
+}
+
+/* The “(n)” next to the course name uses the same .courseCount class */
+.resultCourseNameCell .courseCount {
+  font-weight: 400;
+  color: var(--neutral-700);
+  margin-left: var(--spacing-xxs);
+  font-size: var(--font-sm);
+}
+
+/* The row of “off-time” buttons (second column) */
+.resultTimesCell {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+}
+
+/* If a given course has no races, show italic message */
+.noRacesText {
+  font-style: italic;
+  color: var(--neutral-800);
+}

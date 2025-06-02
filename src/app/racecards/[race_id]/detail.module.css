@@ -1,0 +1,160 @@
+/* detail.module.css */
+
+/* Purple header bar */
+.header {
+  background-color: #4F46E5; /* indigo-600 */
+  color: #FFFFFF;
+  padding: 1.5rem 1rem;
+}
+
+/* Header title text */
+.headerTitle {
+  margin: 0;
+  font-size: 1.5rem;   /* 24px */
+  font-weight: 600;
+}
+
+/* Wrapper around the “Race info” card */
+.infoWrapper {
+  margin-top: -1rem;
+  margin-bottom: 2rem;
+}
+
+/* Inside the info card, use a two-column grid on desktop */
+.infoGrid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 768px) {
+  .infoGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Label for each field inside the info card */
+.fieldLabel {
+  font-weight: 500;
+  color: #374151; /* gray-700 */
+}
+
+/* Value for each field */
+.fieldValue {
+  color: #374151; /* gray-700 */
+  margin-left: 0.25rem;
+}
+
+/* Section title “Runners (XX)” */
+.runnersTitle {
+  font-size: 1.25rem; /* 20px */
+  font-weight: 600;
+  color: #111827;     /* gray-900 */
+  margin-bottom: 1rem;
+}
+
+/* Wrapper around all runners list */
+.runnersWrapper {
+  max-width: 48rem; /* ~768px */
+  margin: 0 auto 2rem; /* center and bottom spacing */
+  padding: 0 1rem;
+}
+
+/* Each runner card */
+.runnerCard {
+  background-color: #FFFFFF;
+  border: 1px solid #E5E7EB; /* gray-200 */
+  border-radius: 0.5rem;     /* 8px */
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+@media (min-width: 768px) {
+  .runnerCard {
+    flex-direction: row;
+  }
+}
+
+/* Container for the silk image */
+.silkContainer {
+  flex-shrink: 0;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* The silk image itself */
+.silkImage {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 0.25rem;
+  border: 1px solid #E5E7EB; /* gray-200 */
+  background-color: #F3F4F6; /* gray-100 placeholder */
+}
+
+/* Runner details (text) */
+.runnerDetails {
+  padding: 1rem;
+  border-top: 1px solid #F3F4F6; /* gray-100 */
+}
+@media (min-width: 768px) {
+  .runnerDetails {
+    border-top: none;
+    border-left: 1px solid #F3F4F6; /* gray-100 */
+  }
+}
+
+/* Runner name + age/sex */
+.runnerName {
+  margin: 0;
+  font-size: 1.125rem; /* 18px */
+  font-weight: 600;
+  color: #111827;      /* gray-900 */
+}
+
+/* Trainer line, comment, form/RPR text */
+.runnerMeta {
+  margin-top: 0.25rem;
+  color: #374151; /* gray-700 */
+  font-size: 0.875rem; /* 14px */
+}
+
+.runnerComment {
+  margin-top: 0.5rem;
+  font-style: italic;
+  color: #374151; /* gray-700 */
+}
+
+.runnerStats {
+  margin-top: 0.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.runnerStats span {
+  color: #374151; /* gray-700 */
+}
+
+/* Latest quote text */
+.runnerQuote {
+  margin-top: 0.75rem;
+  color: #4F46E5;     /* indigo-600 */
+  font-style: italic;
+}
+
+/* Back-to-list link at bottom */
+.backLink {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.backLink a {
+  color: #4F46E5;        /* indigo-600 */
+  text-decoration: none;
+}
+.backLink a:hover {
+  text-decoration: underline;
+}

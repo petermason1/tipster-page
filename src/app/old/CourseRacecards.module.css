@@ -294,15 +294,161 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* ── G) MOBILE ADJUSTMENTS ───────────────────────────────────── */
+/* ── TABLET ADJUSTMENTS FOR “NEXT 6 RACES” (≤768px) ────────────────────── */
 
-@media (max-width: 480px) {
+@media (max-width: 768px) {
+  /* Convert “Next 6” to a wrapping grid of small course+time cards */
+  .nextSixContainer {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    padding: 0.5rem 0;
+  }
+
+  .nextSixItem {
+    background-color: #e6f7ff;
+    border: 1px solid #91d5ff;
+    border-radius: 4px;
+    padding: 0.5rem 0.4rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    cursor: pointer;
+  }
+
+  /* Course name above time, truncated if too long */
+  .nextSixCourse {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 0.25rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
+  }
+
+  /* Hide race name on tablets */
+  .nextSixName {
+    display: none;
+  }
+
+  /* Style the time exactly like a button, but sized for tablets */
+  .nextSixTime {
+    background-color: #f5f5f5;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 0.35rem 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #0050b3;
+    white-space: nowrap;
+    width: 100%;
+    text-align: center;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+  }
+
+  .nextSixTime:hover {
+    background-color: #e0e0e0;
+  }
+  .nextSixTimeActive {
+    background-color: #52c41a;
+    border-color: #389e0d;
+    color: #fff;
+  }
+
+  /* ── Runner Table (Tablet) ─────────────────────────────────── */
   .runnerHeaderRow,
   .runnerRow {
-    font-size: 0.80rem;
+    font-size: 0.85rem;
   }
+  .runnerRow {
+    grid-template-columns:
+      36px             /* Silk icon */
+      50px             /* Number */
+      minmax(80px, 1fr)  /* Horse */
+      minmax(80px, 1fr)  /* Jockey */
+      minmax(80px, 1fr)  /* Trainer */
+      50px;            /* Weight */
+  }
+
   .courseNameCell {
     font-size: 1rem;
+  }
+  .timeButton {
+    font-size: 0.9rem;
+    padding: 0.35rem 0.6rem;
+  }
+}
+
+/* ── PHONE ADJUSTMENTS FOR “NEXT 6 RACES” (≤480px) ─────────────────────── */
+
+@media (max-width: 480px) {
+  /* Single‐row horizontal scroller of time buttons only */
+  .nextSixContainer {
+    display: flex;
+    overflow-x: auto;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+    margin-bottom: 1rem;
+  }
+  .nextSixItem {
+    flex: 0 0 auto;
+    margin: 0;
+    padding: 0;
+  }
+  .nextSixCourse,
+  .nextSixName {
+    display: none; /* Hide both course and race names on phones */
+  }
+
+  .nextSixTime {
+    background-color: #f5f5f5;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 0.35rem 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #0050b3;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+  .nextSixTime:hover {
+    background-color: #e0e0e0;
+  }
+  .nextSixTimeActive {
+    background-color: #52c41a;
+    border-color: #389e0d;
+    color: #fff;
+  }
+
+  /* ── Runner Table (Phone) ───────────────────────────────── */
+  .runnerHeaderRow,
+  .runnerRow {
+    font-size: 0.8rem;
+  }
+  .runnerRow {
+    grid-template-columns:
+      32px           /* Silk */
+      40px           /* Number */
+      minmax(60px, 1fr)  /* Horse */
+      minmax(60px, 1fr)  /* Jockey */
+      minmax(60px, 1fr)  /* Trainer */
+      40px;          /* Weight */
+  }
+  .horseCell,
+  .jockeyCell,
+  .trainerCell {
+    white-space: normal;
+    overflow-wrap: break-word;
+  }
+
+  .courseNameCell {
+    font-size: 0.95rem;
+    flex: 0 0 140px; /* allow wrapping */
   }
   .timeButton {
     font-size: 0.85rem;

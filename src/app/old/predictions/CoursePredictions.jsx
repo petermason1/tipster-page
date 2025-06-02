@@ -7,7 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 import styles from "./CoursePredictions.module.css";
 
-export default function CoursePredictions({ courseNames, byCourse }) {
+export default function CoursePredictions({ courseNames = [], byCourse = {} }) {
   // ─── View Mode State (“ALL” vs “SINGLE”) ───────────────────────
   const [viewMode, setViewMode] = useState("ALL");
   const [selectedCourse, setSelectedCourse] = useState(courseNames[0] || null);
@@ -26,7 +26,7 @@ export default function CoursePredictions({ courseNames, byCourse }) {
     return h * 60 + m;
   }
 
-  // ─── On mount, compute the next 6 races relative to local time ───
+  // ─── On mount (and whenever courseNames or byCourse changes), compute the next 6 races ──
   useEffect(() => {
     const now = new Date();
     const currentMinutes = now.getHours() * 60 + now.getMinutes();
@@ -40,7 +40,7 @@ export default function CoursePredictions({ courseNames, byCourse }) {
       }
     }
 
-    // Filter, sort, slice to the next 6
+    // Filter to races whose race_time ≥ now, sort by time, slice 6
     const upcoming = allRaces
       .map(({ course, race }) => ({
         course,
@@ -54,7 +54,7 @@ export default function CoursePredictions({ courseNames, byCourse }) {
     setNextSixRaces(upcoming);
   }, [courseNames, byCourse]);
 
-  // ─── Helper: is this race “held”? ───────────────────────────────
+  // ─── Helper: is this race “held”? (held either flagged or result === "held") ──
   function isRaceHeld(race) {
     return (
       (race.result && String(race.result).toLowerCase() === "held") ||
@@ -69,6 +69,7 @@ export default function CoursePredictions({ courseNames, byCourse }) {
       selectedCourse === courseName &&
       openRaceIdx === idx
     ) {
+      // Already open → close it
       setOpenRaceIdx(null);
     } else {
       setSelectedCourse(courseName);
@@ -78,48 +79,60 @@ export default function CoursePredictions({ courseNames, byCourse }) {
   }
 
   // ─────────────────────────────────────────────────────────────────
-  // 1) RENDER “Next 6 Races” (CLICKABLE) ──────────────────────────
+  // 1) RENDER “Next 6 Races” (CLICKABLE BUTTONS, ACCESSIBLE) ────────
   //────────────────────────────────────────────────────────────────
   function renderNextSix() {
     return (
-      <div className={styles.nextSixContainer}>
-        <h2 className={styles.nextSixHeading}>Next 6 Races</h2>
+      <section role="region" aria-labelledby="next-6-heading">
+        <h2 id="next-6-heading" className={styles.nextSixHeading}>
+          Next 6 Races
+        </h2>
 
-        {nextSixRaces.length === 0 ? (
-          <p className={styles.nextSixEmpty}>No upcoming races today.</p>
-        ) : (
-          nextSixRaces.map(({ course, race }, idx) => {
-            const offTime = race.race_time || "—";
-            const raceName = race.race_name || "";
+        <div className={styles.nextSixContainer}>
+          {nextSixRaces.length === 0 ? (
+            <p className={styles.nextSixEmpty}>No upcoming races today.</p>
+          ) : (
+            nextSixRaces.map(({ course, race }, idx) => {
+              const offTime = race.race_time || "—";
+              const raceName = race.race_name || "";
 
-            // Find this race’s index within its course array
-            const courseRaces = Array.isArray(byCourse[course])
-              ? byCourse[course]
-              : [];
-            const idxInCourse = courseRaces.findIndex(
-              (r2) =>
-                r2.race_time === race.race_time &&
-                (r2.race_name || "") === raceName
-            );
+              // Find this race’s index within its course array
+              const courseRaces = Array.isArray(byCourse[course])
+                ? byCourse[course]
+                : [];
+              const idxInCourse = courseRaces.findIndex(
+                (r2) =>
+                  r2.race_time === race.race_time &&
+                  (r2.race_name || "") === raceName
+              );
 
-            return (
-              <div
-                key={idx}
-                className={styles.nextSixItem}
-                onClick={() => {
-                  if (idxInCourse >= 0) {
-                    toggleRace(course, idxInCourse);
-                  }
-                }}
-              >
-                <span className={styles.nextSixTime}>{offTime}</span>
-                <span className={styles.nextSixCourse}>{course}</span>
-                <span className={styles.nextSixName}>{raceName}</span>
-              </div>
-            );
-          })
-        )}
-      </div>
+              const isOpen =
+                viewMode === "SINGLE" &&
+                selectedCourse === course &&
+                openRaceIdx === idxInCourse;
+
+              return (
+                <button
+                  key={`${course}-${offTime}-${idx}`}
+                  type="button"
+                  className={styles.nextSixItem}
+                  onClick={() => {
+                    if (idxInCourse >= 0) {
+                      toggleRace(course, idxInCourse);
+                    }
+                  }}
+                  aria-label={`${offTime} at ${course} — ${raceName || "Race"}`}
+                  aria-expanded={isOpen}
+                >
+                  <span className={styles.nextSixTime}>{offTime}</span>
+                  <span className={styles.nextSixCourse}>{course}</span>
+                  <span className={styles.nextSixName}>{raceName}</span>
+                </button>
+              );
+            })
+          )}
+        </div>
+      </section>
     );
   }
 
@@ -129,7 +142,7 @@ export default function CoursePredictions({ courseNames, byCourse }) {
   function renderAllCoursesView() {
     return (
       <div>
-        {/* Next 6 Races at the top */}
+        {/* Next 6 Races at top */}
         {renderNextSix()}
 
         {/* Each course in a “card” */}
@@ -141,23 +154,24 @@ export default function CoursePredictions({ courseNames, byCourse }) {
           return (
             <div key={ci} className={styles.courseRowBox}>
               <div className={styles.courseRow}>
-                {/* Course Name (clickable) */}
-                <div
-                  className={styles.courseNameCell}
+                {/* Course name as a button */}
+                <button
+                  type="button"
+                  className={styles.courseNameButton}
                   onClick={() => {
                     setSelectedCourse(courseName);
                     setViewMode("SINGLE");
                     setOpenRaceIdx(null);
                   }}
-                  style={{ cursor: "pointer" }}
+                  aria-label={`View all races at ${courseName}`}
                 >
                   {courseName}{" "}
                   <span className={styles.courseCount}>
                     ({races.length})
                   </span>
-                </div>
+                </button>
 
-                {/* Off‐time Buttons */}
+                {/* Off‐time buttons */}
                 <div className={styles.timesCell}>
                   {races.length === 0 ? (
                     <span className={styles.noRacesText}>No races today</span>
@@ -172,19 +186,23 @@ export default function CoursePredictions({ courseNames, byCourse }) {
                       return (
                         <button
                           key={idx}
-                          className={`
-                            ${styles.timeButton}
-                            ${isOpen ? styles.timeButtonActive : ""}
-                            ${held ? styles.timeButtonHeld : ""}
-                          `}
+                          type="button"
+                          className={`${styles.timeButton} ${
+                            isOpen ? styles.timeButtonActive : ""
+                          } ${held ? styles.timeButtonHeld : ""}`}
                           onClick={() => {
                             if (!held) {
-                              setSelectedCourse(courseName);
-                              setViewMode("SINGLE");
-                              setOpenRaceIdx(idx);
+                              toggleRace(courseName, idx);
                             }
                           }}
-                          title={held ? "Race result held" : ""}
+                          title={held ? "Race result held" : undefined}
+                          aria-label={`${offTime} ${
+                            held ? "(held)" : ""
+                          } at ${courseName}. ${
+                            isOpen ? "Collapse details." : "View details."
+                          }`}
+                          aria-expanded={isOpen}
+                          disabled={held}
                         >
                           {offTime}
                         </button>
@@ -213,43 +231,56 @@ export default function CoursePredictions({ courseNames, byCourse }) {
         {/* “Back to All Courses” */}
         <div className={styles.backButtonContainer}>
           <button
+            type="button"
             className={styles.backButton}
             onClick={() => {
               setViewMode("ALL");
               setOpenRaceIdx(null);
             }}
+            aria-label="Back to all courses"
           >
             ← Back to All Courses
           </button>
         </div>
 
         {/* Horizontal list of course‐chips */}
-        <div className={styles.courseLinkList}>
+        <div className={styles.courseLinkList} role="tablist">
           {courseNames.map((courseName) => (
             <button
               key={courseName}
-              className={`
-                ${styles.courseLink}
-                ${courseName === selectedCourse ? styles.courseLinkActive : ""}
-              `}
+              type="button"
+              className={`${styles.courseLink} ${
+                courseName === selectedCourse ? styles.courseLinkActive : ""
+              }`}
               onClick={() => {
                 setSelectedCourse(courseName);
                 setOpenRaceIdx(null);
               }}
+              role="tab"
+              aria-selected={courseName === selectedCourse}
+              aria-controls={`course-panel-${courseName}`}
+              id={`tab-${courseName}`}
             >
               {courseName} ({byCourse[courseName]?.length ?? 0})
             </button>
           ))}
         </div>
 
-        {/* Only the selected course’s card */}
-        <div className={styles.courseRowBox}>
+        {/* The selected course’s single card */}
+        <div
+          className={styles.courseRowBox}
+          id={`course-panel-${selectedCourse}`}
+          role="tabpanel"
+          aria-labelledby={`tab-${selectedCourse}`}
+        >
           <div className={styles.courseRow}>
             <div className={styles.courseNameCell}>
-              {selectedCourse}{" "}
-              <span className={styles.courseCount}>
-                ({races.length})
-              </span>
+              <h3>
+                {selectedCourse}{" "}
+                <span className={styles.courseCount}>
+                  ({races.length})
+                </span>
+              </h3>
             </div>
             <div className={styles.timesCell}>
               {races.length === 0 ? (
@@ -262,17 +293,23 @@ export default function CoursePredictions({ courseNames, byCourse }) {
                   return (
                     <button
                       key={idx}
-                      className={`
-                        ${styles.timeButton}
-                        ${isOpen ? styles.timeButtonActive : ""}
-                        ${held ? styles.timeButtonHeld : ""}
-                      `}
+                      type="button"
+                      className={`${styles.timeButton} ${
+                        isOpen ? styles.timeButtonActive : ""
+                      } ${held ? styles.timeButtonHeld : ""}`}
                       onClick={() => {
                         if (!held) {
                           setOpenRaceIdx(isOpen ? null : idx);
                         }
                       }}
-                      title={held ? "Race result held" : ""}
+                      title={held ? "Race result held" : undefined}
+                      aria-label={`${offTime} ${
+                        held ? "(held)" : ""
+                      } at ${selectedCourse}. ${
+                        isOpen ? "Collapse details." : "View details."
+                      }`}
+                      aria-expanded={isOpen}
+                      disabled={held}
                     >
                       {offTime}
                     </button>
@@ -283,7 +320,7 @@ export default function CoursePredictions({ courseNames, byCourse }) {
           </div>
         </div>
 
-        {/* Detail Panel for the selected race */}
+        {/* Race Detail Panel (for the selected race) */}
         {openRaceIdx !== null && (
           <div className={styles.raceDetailPanel}>
             {(() => {
@@ -298,8 +335,10 @@ export default function CoursePredictions({ courseNames, byCourse }) {
               )}-${openRaceIdx}`;
               const anchorId = encodeURIComponent(anchorText);
 
+              // Extract the extra fields from the race object
               const extraFields = { ...race };
               delete extraFields.course;
+              delete extraFields.off_time;
               delete extraFields.race_time;
               delete extraFields.race_name;
               delete extraFields.distance;
@@ -330,7 +369,7 @@ export default function CoursePredictions({ courseNames, byCourse }) {
                     <span className={styles.detailValue}>{raceName}</span>
                   </div>
 
-                  {/* 3) EXTRA FIELDS */}
+                  {/* 3) EXTRA RACE‐LEVEL FIELDS */}
                   {Object.entries(extraFields).map(([key, value]) => {
                     if (value == null || value === "") return null;
                     const displayVal =
@@ -342,9 +381,7 @@ export default function CoursePredictions({ courseNames, byCourse }) {
                         <span className={styles.detailLabel}>
                           {key
                             .replace(/_/g, " ")
-                            .replace(/\b\w/g, (c) =>
-                              c.toUpperCase()
-                            )}
+                            .replace(/\b\w/g, (c) => c.toUpperCase())}
                           :
                         </span>
                         <span className={styles.detailValue}>{displayVal}</span>
@@ -386,7 +423,12 @@ export default function CoursePredictions({ courseNames, byCourse }) {
                                   style={{ objectFit: "contain" }}
                                 />
                               ) : (
-                                <div style={{ width: "40px", height: "40px" }} />
+                                <div
+                                  style={{
+                                    width: "40px",
+                                    height: "40px",
+                                  }}
+                                />
                               )}
                             </div>
                             <div className={styles.numberCell}>
@@ -425,5 +467,7 @@ export default function CoursePredictions({ courseNames, byCourse }) {
   }
 
   // ─────────────────────────────────────────────────────────────────────────
-  return viewMode === "ALL" ? renderAllCoursesView() : renderSingleCourseView();
+  return viewMode === "ALL"
+    ? renderAllCoursesView()
+    : renderSingleCourseView();
 }

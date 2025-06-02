@@ -1,0 +1,54 @@
+/* RaceCard.module.css */
+
+/* Page title */
+.title {
+  font-size: 1.875rem; /* 30px */
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #111827; /* dark text */
+}
+
+/* Each race “card” */
+.card {
+  background-color: #FFFFFF;
+  border: 1px solid #E5E7EB; /* gray-200 */
+  border-radius: 0.5rem;     /* 8px */
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.2s ease;
+}
+
+.card:hover {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Race name inside each card */
+.raceName {
+  font-size: 1.25rem; /* 20px */
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #111827;
+}
+
+/* Label (“Course:”, “Off Time:”, etc.) */
+.label {
+  font-weight: 500;
+  color: #374151; /* gray-700 */
+}
+
+/* Value text next to label */
+.value {
+  color: #374151; /* gray-700 */
+  margin-left: 0.25rem;
+}
+
+/* Link to details inside card */
+.card a {
+  color: #4F46E5; /* indigo-600 */
+  text-decoration: none;
+}
+
+.card a:hover {
+  text-decoration: underline;
+}
